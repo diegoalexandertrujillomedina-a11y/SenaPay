@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Login_v2._0.Models;
+using SenaPay_Base.Models;
 
-namespace Login_v2._0.Controllers;
+namespace SenaPay_Base.Controllers;
 
 public class HomeController : Controller
 {

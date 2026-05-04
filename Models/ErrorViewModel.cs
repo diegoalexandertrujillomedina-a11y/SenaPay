@@ -1,4 +1,4 @@
-namespace Login_v2._0.Models
+namespace SenaPay_Base.Models
 {
     public class ErrorViewModel
     {

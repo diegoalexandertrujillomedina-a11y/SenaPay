@@ -9,5 +9,15 @@ namespace Login_v2._0.Controllers
         {
             return View();
         }
+        // Controlador de vistas "olvide contraseña" y "support"
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        public IActionResult Support()
+        {
+            return View();
+        }
     }
 }
