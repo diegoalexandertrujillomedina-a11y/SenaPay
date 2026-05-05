@@ -1,4 +1,4 @@
-﻿@model RecuperarPasswordViewModel
+﻿@model VerificarCodigoViewModel
 @{
     Layout = null;
 }
@@ -7,7 +7,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SenaPay | Recuperar Contraseña</title>
+    <title>SenaPay | Verificar Código</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -50,7 +50,7 @@
                 color: #fff !important;
             }
 
-            .form-control, .form-select {
+            .form-control {
                 background: #252529 !important;
                 border-color: #333 !important;
                 color: #eee !important;
@@ -89,6 +89,20 @@
                 .back-link:hover {
                     color: var(--c) !important;
                 }
+
+            .digit-box {
+                background: #252529 !important;
+                border-color: #333 !important;
+                color: #eee !important;
+            }
+
+            .countdown {
+                color: rgba(255,255,255,.5) !important;
+            }
+
+            .resend-link {
+                color: #64748b !important;
+            }
         }
 
         body, html {
@@ -217,55 +231,46 @@
                 background: #f1f5f9;
             }
 
-        .field-group {
-            margin-bottom: 16px
+        /* ── Cajas de dígito ── */
+        .digits-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 8px 0 20px;
         }
 
-        .field-label {
-            display: block;
-            font-family: 'Outfit', sans-serif;
-            font-size: .68rem;
-            font-weight: 600;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            margin-bottom: 6px
-        }
-
-        .field-wrap {
-            position: relative
-        }
-
-        .field-icon {
-            position: absolute;
-            left: 13px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #c8d3dc;
-            font-size: 14px;
-            pointer-events: none;
-            transition: color .3s
-        }
-
-        .form-control, .form-select {
-            width: 100%;
-            padding: 13px 13px 13px 38px;
+        .digit-box {
+            width: 52px;
+            height: 60px;
             border: 1.5px solid #edf0f4;
-            border-radius: 12px;
-            font-family: 'Inter', sans-serif;
-            font-size: .88rem;
-            color: #1e293b;
+            border-radius: 14px;
             background: #fafbfc;
-            appearance: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #0f172a;
+            text-align: center;
             outline: none;
-            transition: border-color .25s, box-shadow .25s
+            transition: border-color .25s, box-shadow .25s, transform .15s;
+            caret-color: var(--c);
         }
 
-            .form-control:focus, .form-select:focus {
+            .digit-box:focus {
                 border-color: var(--c);
                 box-shadow: 0 0 0 3.5px var(--cr);
-                background: #fff
+                background: #fff;
+                transform: translateY(-2px);
             }
+
+            .digit-box.filled {
+                border-color: var(--c);
+                color: var(--c);
+            }
+
+        /* campo oculto que acumula el código completo */
+        #codigoHidden {
+            display: none
+        }
 
         .alert-ui {
             font-size: 0.72rem;
@@ -275,6 +280,7 @@
             align-items: center;
             gap: 4px;
             font-weight: 500;
+            justify-content: center;
         }
 
         .info-hint {
@@ -293,6 +299,46 @@
                 flex-shrink: 0;
             }
 
+        /* Contador de reenvío */
+        .resend-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .countdown {
+            font-family: 'Outfit', sans-serif;
+            font-size: .78rem;
+            font-weight: 600;
+            color: #94a3b8;
+            min-width: 36px;
+            text-align: center;
+        }
+
+        .resend-link {
+            font-family: 'Outfit', sans-serif;
+            font-size: .78rem;
+            font-weight: 700;
+            color: #cbd5e1;
+            background: none;
+            border: none;
+            cursor: not-allowed;
+            text-decoration: none;
+            transition: color .2s;
+            padding: 0;
+        }
+
+            .resend-link.active {
+                color: var(--c);
+                cursor: pointer;
+            }
+
+                .resend-link.active:hover {
+                    text-decoration: underline;
+                }
+
         .btn-submit {
             width: 100%;
             padding: 15px 20px;
@@ -309,7 +355,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-top: 22px;
+            margin-top: 8px;
             box-shadow: 0 10px 30px var(--cg);
             transition: all var(--speed);
             position: relative;
@@ -358,6 +404,7 @@
                 color: var(--c);
             }
 
+        /* Panel derecho */
         .r-panel {
             flex: 1;
             position: relative;
@@ -457,6 +504,33 @@
                 opacity: 0
             }
         }
+
+        /* Animación de shake cuando el código es incorrecto */
+        @@keyframes shake {
+            0%, 100% {
+                transform: translateX(0)
+            }
+
+            20% {
+                transform: translateX(-6px)
+            }
+
+            40% {
+                transform: translateX(6px)
+            }
+
+            60% {
+                transform: translateX(-4px)
+            }
+
+            80% {
+                transform: translateX(4px)
+            }
+        }
+
+        .shake {
+            animation: shake .4s ease
+        }
     </style>
 </head>
 <body>
@@ -474,13 +548,13 @@
                         </div>
                         <div class="brand-text">
                             <h1>SenaPay</h1>
-                            <span>Recuperar acceso</span>
+                            <span>Verificación de código</span>
                         </div>
                     </div>
 
                     <div class="section-title">
-                        <i class="bi bi-key-fill" style="font-size:12px;color:var(--c)"></i>
-                        Verificación de identidad
+                        <i class="bi bi-envelope-fill" style="font-size:12px;color:var(--c)"></i>
+                        Código de verificación
                     </div>
 
                     @if (!ViewData.ModelState.IsValid)
@@ -491,56 +565,52 @@
                         </div>
                     }
 
-                    <form asp-action="RecuperarPassword" method="post" id="recForm" onsubmit="return validateForm(event)">
+                    <form asp-action="VerificarCodigo" method="post" id="verForm" onsubmit="return validateForm(event)">
                         @Html.AntiForgeryToken()
 
-                        <div style="display:flex;gap:10px;">
-                            <div class="field-group" style="width:44%">
-                                <label class="field-label">Tipo doc.</label>
-                                <div class="field-wrap">
-                                    <i class="bi bi-card-text field-icon"></i>
-                                    <select class="form-select" name="TipoDocumento">
-                                        <option value="CC">CC</option>
-                                        <option value="TI">TI</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="field-group" style="flex:1">
-                                <label class="field-label" asp-for="Documento">Documento</label>
-                                <div class="field-wrap">
-                                    <i class="bi bi-hash field-icon"></i>
-                                    <input asp-for="Documento"
-                                           type="text"
-                                           class="form-control"
-                                           id="docField"
-                                           placeholder="0000000000"
-                                           maxlength="12"
-                                           autofocus
-                                           onkeypress="return isNumKey(event)" />
-                                </div>
-                                <div id="err-doc" class="alert-ui">
-                                    <i class="bi bi-exclamation-circle"></i> Ingrese su documento
-                                </div>
-                                <span asp-validation-for="Documento" style="font-size:.72rem;color:#ef4444;margin-top:4px;display:block;"></span>
-                            </div>
-                        </div>
-
-                        <p class="info-hint">
+                        <p class="info-hint" style="margin-bottom:18px;">
                             <i class="bi bi-info-circle"></i>
-                            Ingresa tu número de documento y te enviaremos las instrucciones para restablecer tu contraseña.
+                            Ingresa el código de 6 dígitos que enviamos a tu correo o número registrado.
                         </p>
 
-                            <button asp-controller="Account" asp-action="CodVerificacion" type="submit" class="btn-submit" id="submitBtn">
-                                <span id="btnText">Enviar instrucciones</span>
-                                <div class="btn-arrow"><i class="bi bi-send-fill"></i></div>
+                        <!-- Cajas visuales -->
+                        <div class="digits-row" id="digitsRow">
+                            <input class="digit-box" type="text" inputmode="numeric" maxlength="1" data-index="0" autocomplete="one-time-code">
+                            <input class="digit-box" type="text" inputmode="numeric" maxlength="1" data-index="1">
+                            <input class="digit-box" type="text" inputmode="numeric" maxlength="1" data-index="2">
+                            <input class="digit-box" type="text" inputmode="numeric" maxlength="1" data-index="3">
+                            <input class="digit-box" type="text" inputmode="numeric" maxlength="1" data-index="4">
+                            <input class="digit-box" type="text" inputmode="numeric" maxlength="1" data-index="5">
+                        </div>
+
+                        <!-- Campo oculto real que se envía al servidor -->
+                        <input type="hidden" name="Codigo" id="codigoHidden" asp-for="Codigo" />
+
+                        <div id="err-code" class="alert-ui">
+                            <i class="bi bi-exclamation-circle"></i> Completa los 6 dígitos del código
+                        </div>
+                        <span asp-validation-for="Codigo" style="font-size:.72rem;color:#ef4444;margin-top:4px;display:flex;justify-content:center;"></span>
+
+                        <!-- Reenviar código -->
+                        <div class="resend-row" style="margin-top:14px;">
+                            <i class="bi bi-clock" style="font-size:.72rem;color:#94a3b8"></i>
+                            <span class="countdown" id="countdown">02:00</span>
+                            <button type="button" class="resend-link" id="resendBtn" onclick="resendCode()">
+                                Reenviar código
                             </button>
-                 
+                        </div>
+
+                        <button asp-controller="Account" asp-action="ActualizarContraseña" type="submit" class="btn-submit" id="submitBtn" onclick="btnRipple(event)">
+                            <span id="btnText">Verificar código</span>
+                            <div class="btn-arrow"><i class="bi bi-check2-circle"></i></div>
+                        </button>
+
                     </form>
 
                     <div class="card-footer">
                         <div style="text-align:center;">
-                            <a asp-controller="Home" asp-action="Index" class="back-link">
-                                <i class="bi bi-arrow-left"></i> Volver al inicio de sesión
+                            <a asp-controller="Account" asp-action="ForgotPassword" class="back-link">
+                                <i class="bi bi-arrow-left"></i> Volver al paso anterior
                             </a>
                         </div>
                         <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -565,40 +635,130 @@
                 <div class="r-pill">
                     <div class="r-pill-dot"></div> SENA · Colombia
                 </div>
-                <h2>Recupera tu<br><em>acceso seguro</em></h2>
-                <p>Tu identidad digital está protegida. Sigue los pasos para restablecer tu contraseña de forma rápida y segura.</p>
+                <h2>Confirma tu<br><em>identidad digital</em></h2>
+                <p>Revisaste tu correo o mensaje de texto. Ingresa el código de 6 dígitos para continuar con la recuperación.</p>
             </div>
         </div>
 
     </div>
 
     <script>
-        function isNumKey(e) {
-            var c = e.which || e.keyCode;
-            return (c >= 48 && c <= 57);
-        }
+        /* ── Lógica de cajas de dígitos ── */
+        var boxes = Array.from(document.querySelectorAll('.digit-box'));
+        var hidden = document.getElementById('codigoHidden');
 
-        function validateForm(e) {
-            var doc = document.getElementById('docField').value.trim();
-            var valid = true;
-            if (!doc) {
-                document.getElementById('err-doc').style.display = 'flex';
-                valid = false;
-            } else {
-                document.getElementById('err-doc').style.display = 'none';
-            }
-            if (valid) {
-                if (!window.navigator.onLine) {
-                    alert('No tienes conexión a internet.');
-                    return false;
+        boxes.forEach(function (box, i) {
+            box.addEventListener('keydown', function (e) {
+                if (e.key === 'Backspace' && !box.value && i > 0) {
+                    boxes[i - 1].focus();
+                    boxes[i - 1].value = '';
+                    boxes[i - 1].classList.remove('filled');
+                    syncHidden();
                 }
-                var btn = document.getElementById('submitBtn');
-                btn.disabled = true;
-                document.getElementById('btnText').innerText = 'Enviando...';
-            }
-            return valid;
+            });
+
+            box.addEventListener('input', function () {
+                // Sólo números
+                box.value = box.value.replace(/\D/g, '').slice(-1);
+                if (box.value) {
+                    box.classList.add('filled');
+                    if (i < 5) boxes[i + 1].focus();
+                } else {
+                    box.classList.remove('filled');
+                }
+                syncHidden();
+            });
+
+            // Pegar código completo desde el portapapeles (OTP autocompletar)
+            box.addEventListener('paste', function (e) {
+                var data = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+                if (data.length === 6) {
+                    e.preventDefault();
+                    boxes.forEach(function (b, idx) {
+                        b.value = data[idx] || '';
+                        b.classList.toggle('filled', !!b.value);
+                    });
+                    boxes[5].focus();
+                    syncHidden();
+                }
+            });
+        });
+
+        function syncHidden() {
+            hidden.value = boxes.map(function (b) { return b.value; }).join('');
         }
 
+        /* ── Validación del formulario ── */
+        function validateForm(e) {
+            syncHidden();
+            var code = hidden.value;
+            if (code.length < 6) {
+                document.getElementById('err-code').style.display = 'flex';
+                document.getElementById('digitsRow').classList.add('shake');
+                setTimeout(function () {
+                    document.getElementById('digitsRow').classList.remove('shake');
+                }, 400);
+                return false;
+            }
+            document.getElementById('err-code').style.display = 'none';
+
+            if (!window.navigator.onLine) {
+                alert('No tienes conexión a internet.');
+                return false;
+            }
+            var btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            document.getElementById('btnText').innerText = 'Verificando...';
+            return true;
+        }
+
+        /* ── Contador de reenvío (2 minutos) ── */
+        var totalSeconds = 120;
+        var remaining   = totalSeconds;
+        var timer;
+
+        function startCountdown() {
+            remaining = totalSeconds;
+            var resendBtn = document.getElementById('resendBtn');
+            resendBtn.classList.remove('active');
+            resendBtn.disabled = true;
+
+            clearInterval(timer);
+            timer = setInterval(function () {
+                remaining--;
+                var m = Math.floor(remaining / 60);
+                var s = remaining % 60;
+                document.getElementById('countdown').textContent =
+                    (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+
+                if (remaining <= 0) {
+                    clearInterval(timer);
+                    document.getElementById('countdown').textContent = '00:00';
+                    resendBtn.classList.add('active');
+                    resendBtn.disabled = false;
+                }
+            }, 1000);
+        }
+
+        function resendCode() {
+            var resendBtn = document.getElementById('resendBtn');
+            if (!resendBtn.classList.contains('active')) return;
+
+            // Limpiar cajas
+            boxes.forEach(function (b) { b.value = ''; b.classList.remove('filled'); });
+            hidden.value = '';
+            boxes[0].focus();
+
+            // Aquí puedes hacer fetch/ajax para reenviar el código al servidor
+            // fetch('/Account/ReenviarCodigo', { method: 'POST', ... })
+
+            startCountdown();
+        }
+
+        startCountdown();
+        boxes[0].focus();
+
+        /* ── Tilt card ── */
         var tiltWrap = document.getElementById('tiltWrap');
         var tx = 0, ty = 0, ttx = 0, tty = 0;
 
@@ -622,6 +782,7 @@
             requestAnimationFrame(loop);
         })();
 
+        /* ── Ripple en botón ── */
         function btnRipple(e) {
             var r  = e.currentTarget.getBoundingClientRect();
             var sp = document.createElement('span');

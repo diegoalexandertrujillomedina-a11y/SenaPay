@@ -1,4 +1,4 @@
-﻿@model RecuperarPasswordViewModel
+﻿@model NuevaPasswordViewModel
 @{
     Layout = null;
 }
@@ -7,7 +7,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SenaPay | Recuperar Contraseña</title>
+    <title>SenaPay | Nueva Contraseña</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -50,7 +50,7 @@
                 color: #fff !important;
             }
 
-            .form-control, .form-select {
+            .form-control {
                 background: #252529 !important;
                 border-color: #333 !important;
                 color: #eee !important;
@@ -89,6 +89,14 @@
                 .back-link:hover {
                     color: var(--c) !important;
                 }
+
+            .strength-bar-track {
+                background: #252529 !important;
+            }
+
+            .req-item {
+                color: rgba(255,255,255,.45) !important;
+            }
         }
 
         body, html {
@@ -177,7 +185,6 @@
             font-size: 22px;
             flex-shrink: 0;
             box-shadow: 0 8px 24px var(--cg);
-            transition: background var(--speed), box-shadow var(--speed)
         }
 
         .brand-text h1 {
@@ -247,9 +254,28 @@
             transition: color .3s
         }
 
-        .form-control, .form-select {
+        .toggle-pass {
+            position: absolute;
+            right: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #c8d3dc;
+            font-size: 15px;
+            cursor: pointer;
+            transition: color .2s;
+            border: none;
+            background: none;
+            padding: 0;
+            line-height: 1;
+        }
+
+            .toggle-pass:hover {
+                color: var(--c);
+            }
+
+        .form-control {
             width: 100%;
-            padding: 13px 13px 13px 38px;
+            padding: 13px 38px 13px 38px;
             border: 1.5px solid #edf0f4;
             border-radius: 12px;
             font-family: 'Inter', sans-serif;
@@ -261,10 +287,19 @@
             transition: border-color .25s, box-shadow .25s
         }
 
-            .form-control:focus, .form-select:focus {
+            .form-control:focus {
                 border-color: var(--c);
                 box-shadow: 0 0 0 3.5px var(--cr);
                 background: #fff
+            }
+
+            .form-control.is-match {
+                border-color: var(--c);
+            }
+
+            .form-control.is-mismatch {
+                border-color: #ef4444;
+                box-shadow: 0 0 0 3.5px rgba(239,68,68,.07);
             }
 
         .alert-ui {
@@ -277,21 +312,67 @@
             font-weight: 500;
         }
 
-        .info-hint {
-            font-size: .75rem;
-            color: #94a3b8;
-            line-height: 1.5;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: flex-start;
-            gap: 6px;
+        /* ── Barra de fortaleza ── */
+        .strength-wrap {
+            margin-top: 8px
         }
 
-            .info-hint i {
-                color: var(--c);
-                margin-top: 2px;
-                flex-shrink: 0;
+        .strength-bar-track {
+            height: 4px;
+            border-radius: 99px;
+            background: #f1f5f9;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .strength-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            width: 0%;
+            transition: width .4s ease, background .4s ease;
+        }
+
+        .strength-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: .68rem;
+            font-weight: 600;
+            letter-spacing: .6px;
+            color: #94a3b8;
+            transition: color .3s;
+        }
+
+        /* ── Requisitos de contraseña ── */
+        .req-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px 12px;
+            margin-top: 10px;
+            margin-bottom: 4px;
+        }
+
+        .req-item {
+            font-size: .68rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+            transition: color .25s;
+        }
+
+            .req-item i {
+                font-size: 10px;
+                transition: color .25s;
             }
+
+            .req-item.ok {
+                color: var(--c);
+            }
+
+                .req-item.ok i {
+                    color: var(--c);
+                }
 
         .btn-submit {
             width: 100%;
@@ -309,7 +390,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-top: 22px;
+            margin-top: 20px;
             box-shadow: 0 10px 30px var(--cg);
             transition: all var(--speed);
             position: relative;
@@ -330,11 +411,10 @@
             display: grid;
             place-items: center;
             font-size: 14px;
-            transition: transform .3s
         }
 
         .card-footer {
-            margin-top: 28px;
+            margin-top: 24px;
             padding-top: 18px;
             border-top: 1px solid #f1f5f9;
             display: flex;
@@ -358,6 +438,7 @@
                 color: var(--c);
             }
 
+        /* Panel derecho */
         .r-panel {
             flex: 1;
             position: relative;
@@ -438,7 +519,6 @@
             .r-text h2 em {
                 font-style: normal;
                 color: var(--c);
-                transition: color var(--speed)
             }
 
         @@keyframes sPulse {
@@ -470,17 +550,17 @@
 
                     <div class="brand-row">
                         <div class="brand-icon">
-                            <i class="bi bi-shield-lock-fill"></i>
+                            <i class="bi bi-lock-fill"></i>
                         </div>
                         <div class="brand-text">
                             <h1>SenaPay</h1>
-                            <span>Recuperar acceso</span>
+                            <span>Nueva contraseña</span>
                         </div>
                     </div>
 
                     <div class="section-title">
                         <i class="bi bi-key-fill" style="font-size:12px;color:var(--c)"></i>
-                        Verificación de identidad
+                        Establece tu nueva contraseña
                     </div>
 
                     @if (!ViewData.ModelState.IsValid)
@@ -491,56 +571,90 @@
                         </div>
                     }
 
-                    <form asp-action="RecuperarPassword" method="post" id="recForm" onsubmit="return validateForm(event)">
+                    <form asp-action="NuevaPassword" method="post" id="passForm" onsubmit="return validateForm(event)">
                         @Html.AntiForgeryToken()
 
-                        <div style="display:flex;gap:10px;">
-                            <div class="field-group" style="width:44%">
-                                <label class="field-label">Tipo doc.</label>
-                                <div class="field-wrap">
-                                    <i class="bi bi-card-text field-icon"></i>
-                                    <select class="form-select" name="TipoDocumento">
-                                        <option value="CC">CC</option>
-                                        <option value="TI">TI</option>
-                                    </select>
+                        <!-- Nueva contraseña -->
+                        <div class="field-group">
+                            <label class="field-label" asp-for="NuevaPassword">Nueva contraseña</label>
+                            <div class="field-wrap">
+                                <i class="bi bi-lock field-icon"></i>
+                                <input asp-for="NuevaPassword"
+                                       type="password"
+                                       class="form-control"
+                                       id="passField"
+                                       placeholder="••••••••"
+                                       autocomplete="new-password"
+                                       oninput="evalStrength(this.value)" />
+                                <button type="button" class="toggle-pass" onclick="togglePass('passField', this)" tabindex="-1">
+                                    <i class="bi bi-eye-slash"></i>
+                                </button>
+                            </div>
+                            <div id="err-pass" class="alert-ui">
+                                <i class="bi bi-exclamation-circle"></i> La contraseña debe cumplir los requisitos
+                            </div>
+                            <span asp-validation-for="NuevaPassword" style="font-size:.72rem;color:#ef4444;margin-top:4px;display:block;"></span>
+
+                            <!-- Barra de fortaleza -->
+                            <div class="strength-wrap">
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                                    <span class="strength-label" id="strengthLabel">Sin contraseña</span>
+                                </div>
+                                <div class="strength-bar-track">
+                                    <div class="strength-bar-fill" id="strengthBar"></div>
                                 </div>
                             </div>
-                            <div class="field-group" style="flex:1">
-                                <label class="field-label" asp-for="Documento">Documento</label>
-                                <div class="field-wrap">
-                                    <i class="bi bi-hash field-icon"></i>
-                                    <input asp-for="Documento"
-                                           type="text"
-                                           class="form-control"
-                                           id="docField"
-                                           placeholder="0000000000"
-                                           maxlength="12"
-                                           autofocus
-                                           onkeypress="return isNumKey(event)" />
+
+                            <!-- Requisitos -->
+                            <div class="req-list">
+                                <div class="req-item" id="req-len">
+                                    <i class="bi bi-circle"></i> Mín. 8 caracteres
                                 </div>
-                                <div id="err-doc" class="alert-ui">
-                                    <i class="bi bi-exclamation-circle"></i> Ingrese su documento
+                                <div class="req-item" id="req-upper">
+                                    <i class="bi bi-circle"></i> Una mayúscula
                                 </div>
-                                <span asp-validation-for="Documento" style="font-size:.72rem;color:#ef4444;margin-top:4px;display:block;"></span>
+                                <div class="req-item" id="req-num">
+                                    <i class="bi bi-circle"></i> Un número
+                                </div>
+                                <div class="req-item" id="req-special">
+                                    <i class="bi bi-circle"></i> Un símbolo
+                                </div>
                             </div>
                         </div>
 
-                        <p class="info-hint">
-                            <i class="bi bi-info-circle"></i>
-                            Ingresa tu número de documento y te enviaremos las instrucciones para restablecer tu contraseña.
-                        </p>
+                        <!-- Confirmar contraseña -->
+                        <div class="field-group">
+                            <label class="field-label" asp-for="ConfirmarPassword">Confirmar contraseña</label>
+                            <div class="field-wrap">
+                                <i class="bi bi-lock-fill field-icon"></i>
+                                <input asp-for="ConfirmarPassword"
+                                       type="password"
+                                       class="form-control"
+                                       id="confirmField"
+                                       placeholder="••••••••"
+                                       autocomplete="new-password"
+                                       oninput="checkMatch()" />
+                                <button type="button" class="toggle-pass" onclick="togglePass('confirmField', this)" tabindex="-1">
+                                    <i class="bi bi-eye-slash"></i>
+                                </button>
+                            </div>
+                            <div id="err-confirm" class="alert-ui">
+                                <i class="bi bi-exclamation-circle"></i> Las contraseñas no coinciden
+                            </div>
+                            <span asp-validation-for="ConfirmarPassword" style="font-size:.72rem;color:#ef4444;margin-top:4px;display:block;"></span>
+                        </div>
 
-                            <button asp-controller="Account" asp-action="CodVerificacion" type="submit" class="btn-submit" id="submitBtn">
-                                <span id="btnText">Enviar instrucciones</span>
-                                <div class="btn-arrow"><i class="bi bi-send-fill"></i></div>
-                            </button>
-                 
+                        <button type="submit" class="btn-submit" id="submitBtn" onclick="btnRipple(event)">
+                            <span id="btnText">Guardar contraseña</span>
+                            <div class="btn-arrow"><i class="bi bi-floppy-fill"></i></div>
+                        </button>
+
                     </form>
 
                     <div class="card-footer">
                         <div style="text-align:center;">
-                            <a asp-controller="Home" asp-action="Index" class="back-link">
-                                <i class="bi bi-arrow-left"></i> Volver al inicio de sesión
+                            <a asp-controller="Account" asp-action="CodVerificacion" class="back-link">
+                                <i class="bi bi-arrow-left"></i> Volver al paso anterior
                             </a>
                         </div>
                         <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -565,28 +679,121 @@
                 <div class="r-pill">
                     <div class="r-pill-dot"></div> SENA · Colombia
                 </div>
-                <h2>Recupera tu<br><em>acceso seguro</em></h2>
-                <p>Tu identidad digital está protegida. Sigue los pasos para restablecer tu contraseña de forma rápida y segura.</p>
+                <h2>Crea una<br><em>clave segura</em></h2>
+                <p>Elige una contraseña fuerte que proteja tu cuenta. Te recomendamos usar letras, números y símbolos.</p>
             </div>
         </div>
 
     </div>
 
     <script>
-        function isNumKey(e) {
-            var c = e.which || e.keyCode;
-            return (c >= 48 && c <= 57);
+        /* ── Mostrar / ocultar contraseña ── */
+        function togglePass(fieldId, btn) {
+            var f = document.getElementById(fieldId);
+            var icon = btn.querySelector('i');
+            if (f.type === 'password') {
+                f.type = 'text';
+                icon.className = 'bi bi-eye';
+            } else {
+                f.type = 'password';
+                icon.className = 'bi bi-eye-slash';
+            }
         }
 
+        /* ── Evaluador de fortaleza ── */
+        var rules = {
+            len:     function(v) { return v.length >= 8; },
+            upper:   function(v) { return /[A-Z]/.test(v); },
+            num:     function(v) { return /\d/.test(v); },
+            special: function(v) { return /[^A-Za-z0-9]/.test(v); }
+        };
+
+        var strengthCfg = [
+            { label: 'Muy débil',  color: '#ef4444', pct: '15%'  },
+            { label: 'Débil',      color: '#f97316', pct: '35%'  },
+            { label: 'Aceptable',  color: '#eab308', pct: '60%'  },
+            { label: 'Fuerte',     color: '#22c55e', pct: '80%'  },
+            { label: 'Muy fuerte', color: '#39A900', pct: '100%' }
+        ];
+
+        function evalStrength(val) {
+            var score = 0;
+            Object.keys(rules).forEach(function(key) {
+                var met = rules[key](val);
+                score += met ? 1 : 0;
+                var el = document.getElementById('req-' + key);
+                var icon = el.querySelector('i');
+                if (met) {
+                    el.classList.add('ok');
+                    icon.className = 'bi bi-check-circle-fill';
+                } else {
+                    el.classList.remove('ok');
+                    icon.className = 'bi bi-circle';
+                }
+            });
+
+            var bar   = document.getElementById('strengthBar');
+            var label = document.getElementById('strengthLabel');
+
+            if (!val) {
+                bar.style.width = '0%';
+                label.textContent = 'Sin contraseña';
+                label.style.color = '#94a3b8';
+                return;
+            }
+
+            var cfg = strengthCfg[score - 1] || strengthCfg[0];
+            bar.style.width      = cfg.pct;
+            bar.style.background = cfg.color;
+            label.textContent    = cfg.label;
+            label.style.color    = cfg.color;
+
+            // Retestar coincidencia si ya hay algo escrito en confirmar
+            if (document.getElementById('confirmField').value) checkMatch();
+        }
+
+        /* ── Verificar coincidencia ── */
+        function checkMatch() {
+            var p1 = document.getElementById('passField').value;
+            var p2 = document.getElementById('confirmField').value;
+            var cf = document.getElementById('confirmField');
+            if (!p2) {
+                cf.classList.remove('is-match', 'is-mismatch');
+                document.getElementById('err-confirm').style.display = 'none';
+                return;
+            }
+            if (p1 === p2) {
+                cf.classList.add('is-match');
+                cf.classList.remove('is-mismatch');
+                document.getElementById('err-confirm').style.display = 'none';
+            } else {
+                cf.classList.add('is-mismatch');
+                cf.classList.remove('is-match');
+                document.getElementById('err-confirm').style.display = 'flex';
+            }
+        }
+
+        /* ── Validación antes de enviar ── */
         function validateForm(e) {
-            var doc = document.getElementById('docField').value.trim();
-            var valid = true;
-            if (!doc) {
-                document.getElementById('err-doc').style.display = 'flex';
+            var pass    = document.getElementById('passField').value;
+            var confirm = document.getElementById('confirmField').value;
+            var valid   = true;
+
+            // Todos los requisitos deben cumplirse
+            var allMet = Object.keys(rules).every(function(k) { return rules[k](pass); });
+            if (!pass || !allMet) {
+                document.getElementById('err-pass').style.display = 'flex';
                 valid = false;
             } else {
-                document.getElementById('err-doc').style.display = 'none';
+                document.getElementById('err-pass').style.display = 'none';
             }
+
+            if (pass !== confirm || !confirm) {
+                document.getElementById('err-confirm').style.display = 'flex';
+                document.getElementById('confirmField').classList.add('is-mismatch');
+                valid = false;
+            }
+
             if (valid) {
                 if (!window.navigator.onLine) {
                     alert('No tienes conexión a internet.');
@@ -594,11 +801,12 @@
                 }
                 var btn = document.getElementById('submitBtn');
                 btn.disabled = true;
-                document.getElementById('btnText').innerText = 'Enviando...';
+                document.getElementById('btnText').innerText = 'Guardando...';
             }
             return valid;
         }
 
+        /* ── Tilt card ── */
         var tiltWrap = document.getElementById('tiltWrap');
         var tx = 0, ty = 0, ttx = 0, tty = 0;
 
@@ -622,6 +830,7 @@
             requestAnimationFrame(loop);
         })();
 
+        /* ── Ripple en botón ── */
         function btnRipple(e) {
             var r  = e.currentTarget.getBoundingClientRect();
             var sp = document.createElement('span');

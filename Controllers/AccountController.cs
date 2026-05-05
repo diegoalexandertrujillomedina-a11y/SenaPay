@@ -19,5 +19,13 @@ namespace Login_v2._0.Controllers
         {
             return View();
         }
+        public IActionResult CodVerificacion()
+        {
+            return View();
+        }
+        public IActionResult ActualizarContraseña()
+        {
+            return View();
+        }
     }
 }
